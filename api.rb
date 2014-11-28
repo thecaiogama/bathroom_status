@@ -3,29 +3,25 @@ require 'sinatra'
 require './models/bathroom'
 require 'json'
 require 'parse-ruby-client'
+require './models/DBParse'
+
 
 get '/status/:bathroom' do
-	Parse.init :application_id => "kRBzulQgel9HP1SzlLAKQAbFCxLsFbJBmk878gB8",
-           	   :api_key        => "enxZzrPJjZ2V9p6KH83fA7AxsIN8PzpeeiswxG3H",
-               :quiet          => true
+    dbparse = DBParse.new
+    bathroom_p = dbparse.get params[:bathroom]
 
-    bathroom_p_query = Parse::Query.new("bathroom")
-	bathroom_p_query.eq("name", params[:bathroom])
-	bathroom_p = bathroom_p_query.get
 	puts bathroom_p
 
-	#bathroom = Bathroom.new()
-
-	bathroom_p.to_json
-
- #{ :status => 'LIVRE' }.to_json
- #consumir a base
+    bathroom_result = Bathroom.new(bathroom_p["name"], bathroom_p["status"], bathroom_p["updatedAt"].to_s)
+	bathroom_result.as_json
 end
 
 put '/status/' do
-  bathroom = Bathroom.new(params[:name], params[:status])
+  	bathroom = Bathroom.new(params[:name], params[:status])
 
-#base
-
-  bathroom.as_json
+	dbparse = DBParse.new
+	bathroom_p = dbparse.update bathroom.name, bathroom.status
+	
+	bathroom_result = Bathroom.new bathroom_p["name"], bathroom_p["status"]
+	bathroom_result.as_json
 end
