@@ -7,10 +7,11 @@ class Bathroom
   NAMES  = ['HALL', 'SALA']
   STATUS = ['LIVRE', 'OCUPADO', 'DESTRUIDO']
 
-  def initialize(name, status)
+  def initialize(name, status, date = nil)
       @name   = name
       @status = status
-      @date   = DateTime.now.to_s
+      @date   = DateTime.now.to_s if date.nil?
+      @date   = date unless date.nil? 
   end
 
   def as_json
